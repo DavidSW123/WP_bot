@@ -96,7 +96,7 @@ async function askGemini(session, userMessage) {
 
 // ─── Cliente WhatsApp ──────────────────────────────────────────────────────────
 const client = new Client({
-  authStrategy: new LocalAuth({ dataPath: './session' }),
+  authStrategy: new LocalAuth({ dataPath: process.env.SESSION_PATH || './session' }),
   puppeteer: {
     headless: true,
     executablePath: findChrome(),
