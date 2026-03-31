@@ -4,6 +4,17 @@ const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const http = require('http');
+const { execSync } = require('child_process');
+
+// Busca el ejecutable de Chrome (necesario en Render)
+function findChrome() {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
+  try {
+    const path = execSync('find /opt/render/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -1').toString().trim();
+    if (path) { console.log('🟢 Chrome encontrado en:', path); return path; }
+  } catch {}
+  return undefined;
+}
 
 // ─── Validación de variables de entorno ───────────────────────────────────────
 if (!process.env.GEMINI_API_KEY) {
@@ -81,6 +92,7 @@ const client = new Client({
   authStrategy: new LocalAuth({ dataPath: './session' }),
   puppeteer: {
     headless: true,
+    executablePath: findChrome(),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
